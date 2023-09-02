@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: diktyo-config
+  namespace: {{ .Release.Namespace }}
+data:
+  diktyo-config.yaml: |
+    apiVersion: kubescheduler.config.k8s.io/v1
+    kind: KubeSchedulerConfiguration
+    leaderElection:
+      leaderElect: {{ .Values.scheduler.leaderElect }}
+    profiles:
+    - schedulerName: {{ .Values.scheduler.name }}
+      plugins:
+        queueSort:
+          enabled:
+          - name: TopologicalSort
+          disabled:
+          - name: "*"
+        preFilter:
+          enabled:
+          - name: NetworkOverhead
+        filter:
+          enabled:
+          - name: NetworkOverhead
+        score:
+          disabled: # Preferably avoid the combination of NodeResourcesFit with NetworkOverhead
+          - name: NodeResourcesFit
+          enabled: # A higher weight is given to NetworkOverhead to favor allocation schemes with lower latency.
+          - name: NetworkOverhead
+            weight: {{ .Values.scheduler.weight }}
+    pluginConfig:
+      - name: TopologicalSort
+        args:
+          namespaces:
+            {{- range $.Values.plugins.namespaces }}
+            - {{ title . }}
+            {{- end }}
+      - name: NetworkOverhead
+        args:
+          namespaces:
+            {{- range $.Values.plugins.namespaces }}
+            - {{ title . }}
+            {{- end }}
+          weightsName: {{ .Values.plugins.weightsName }}
+          networkTopologyName: {{ .Values.plugins.networkTopologyName }}

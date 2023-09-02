@@ -1,0 +1,134 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ .Values.controller.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: scheduler-plugins-controller
+spec:
+  replicas: {{ .Values.controller.replicaCount }}
+  selector:
+    matchLabels:
+      app: scheduler-plugins-controller
+  template:
+    metadata:
+      labels:
+        app: scheduler-plugins-controller
+    spec:
+      serviceAccountName: {{ .Values.controller.name }}
+      containers:
+      - name: scheduler-plugins-controller
+        image: {{ .Values.controller.image }}
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: scheduler
+  name: {{ .Values.scheduler.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      component: scheduler
+  replicas: {{ .Values.scheduler.replicaCount }}
+  template:
+    metadata:
+      labels:
+        component: scheduler
+    spec:
+      serviceAccountName: {{ .Values.scheduler.name }}
+      containers:
+      - command:
+        - /bin/kube-scheduler
+        - --authentication-kubeconfig=/etc/kubernetes/scheduler.conf
+        - --authorization-kubeconfig=/etc/kubernetes/scheduler.conf
+        - --config=/etc/diktyo/diktyo-config.yaml
+        - -v=9
+        name: {{ .Values.scheduler.name }}
+        image: {{ .Values.scheduler.image }}
+        imagePullPolicy: IfNotPresent        
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 10259
+            scheme: HTTPS
+          initialDelaySeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 10259
+            scheme: HTTPS
+        resources:
+          requests:
+            cpu: '0.1'
+        securityContext:
+          privileged: false
+        volumeMounts:
+          - name: etckubernetes
+            mountPath: /etc/kubernetes
+          - name: diktyo-config
+            mountPath: /etc/diktyo
+      hostNetwork: false
+      hostPID: false
+      volumes:
+        - name: etckubernetes
+          hostPath:
+            path: /etc/kubernetes/
+            type: Directory
+        - name: diktyo-config
+          configMap:
+            name: diktyo-config
+---
+# Deploy appGroup controller
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ .Values.appGroupController.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.appGroupController.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.appGroupController.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appGroupController.name }}
+    spec:
+      serviceAccountName: {{ .Values.appGroupController.name }}
+      containers:
+        - name: {{ .Values.appGroupController.name }}
+          image: {{ .Values.appGroupController.image }}
+          command:
+            - /bin/controller
+          imagePullPolicy: Always #IfNotPresent
+---
+# Deploy NetworkTopology controller
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ .Values.networkTopologyController.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.networkTopologyController.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.networkTopologyController.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.networkTopologyController.name }}
+    spec:
+      serviceAccountName: {{ .Values.networkTopologyController.name }}
+      containers:
+        - name: {{ .Values.networkTopologyController.name }}
+          image: {{ .Values.networkTopologyController.image }}
+          command:
+            - /bin/controller
+          imagePullPolicy: Always #IfNotPresent
