@@ -10,6 +10,8 @@ data:
     kind: KubeSchedulerConfiguration
     leaderElection:
       leaderElect: {{ .Values.scheduler.leaderElect }}
+    clientConnection:
+      kubeconfig: "/etc/kubernetes/scheduler.conf"
     profiles:
     - schedulerName: {{ .Values.scheduler.name }}
       plugins:
@@ -30,18 +32,18 @@ data:
           enabled: # A higher weight is given to NetworkOverhead to favor allocation schemes with lower latency.
           - name: NetworkOverhead
             weight: {{ .Values.scheduler.weight }}
-    pluginConfig:
-      - name: TopologicalSort
-        args:
-          namespaces:
-            {{- range $.Values.plugins.namespaces }}
-            - {{ title . }}
-            {{- end }}
-      - name: NetworkOverhead
-        args:
-          namespaces:
-            {{- range $.Values.plugins.namespaces }}
-            - {{ title . }}
-            {{- end }}
-          weightsName: {{ .Values.plugins.weightsName }}
-          networkTopologyName: {{ .Values.plugins.networkTopologyName }}
+      pluginConfig:
+        - name: TopologicalSort
+          args:
+            namespaces:
+              #{{- range $.Values.plugins.namespaces }}
+              - "default" #{{ title . }}
+              #{{- end }}
+        - name: NetworkOverhead
+          args:
+            namespaces:
+              #{{- range $.Values.plugins.namespaces }}
+              - "default" #{{ title . }}
+              #{{- end }}
+            weightsName: {{ .Values.plugins.weightsName }}
+            networkTopologyName: {{ .Values.plugins.networkTopologyName }}

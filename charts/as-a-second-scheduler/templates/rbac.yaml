@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: diktyo-scheduler
+  name: {{ .Values.scheduler.name }}
 rules:
 - apiGroups: [""]
   resources: ["namespaces"]
@@ -77,11 +77,11 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: diktyo-scheduler
+  name: {{ .Values.scheduler.name }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: diktyo-scheduler
+  name: {{ .Values.scheduler.name }}
 subjects:
 - kind: ServiceAccount
   name: {{ .Values.scheduler.name }}
@@ -91,7 +91,7 @@ subjects:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: scheduler-plugins-controller
+  name: {{ .Values.controller.name }}
 rules:
 - apiGroups: [""]
   resources: ["pods"]
@@ -113,20 +113,20 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: scheduler-plugins-controller
+  name: {{ .Values.controller.name }}
 subjects:
 - kind: ServiceAccount
   name: {{ .Values.controller.name }}
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: scheduler-plugins-controller
+  name: {{ .Values.controller.name }}
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: diktyo-scheduler::extension-apiserver-authentication-reader
+  name: diktyo::extension-apiserver-authentication-reader
   namespace: kube-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -138,13 +138,6 @@ subjects:
   namespace: {{ .Release.Namespace }}
 - kind: ServiceAccount
   name: {{ .Values.controller.name }}
-  namespace: {{ .Release.Namespace }}
----
-# Create Service Account for AppGroup Controller
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: {{ .Values.appGroupController.name }}
   namespace: {{ .Release.Namespace }}
 ---
 # Extra permissions
@@ -166,19 +159,12 @@ metadata:
   name: {{ .Values.appGroupController.name }}
 subjects:
   - kind: ServiceAccount
-    name:  {{ .Values.appgroupController.name }}
+    name:  {{ .Values.appGroupController.name }}
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: {{ .Values.appGroupController.name }}
   apiGroup: rbac.authorization.k8s.io
----
-# Create Service Account for NetworkTopology Controller
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: {{ .Values.networkTopologyController.name }}
-  namespace: {{ .Release.Namespace }}
 ---
 # Extra permissions
 kind: ClusterRole
@@ -214,5 +200,37 @@ roleRef:
   kind: ClusterRole
   name: {{ .Values.networkTopologyController.name }}
   apiGroup: rbac.authorization.k8s.io
+---
+# Apply extra privileges to system:kube-scheduler.
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: system:kube-scheduler:diktyo-scheduler
+rules:
+  - apiGroups: ["scheduling.sigs.x-k8s.io"]
+    resources: ["podgroups", "elasticquotas", "podgroups/status", "elasticquotas/status"]
+    verbs: ["get", "list", "watch", "create", "delete", "update", "patch"]
+  - apiGroups: ["appgroup.diktyo.x-k8s.io"]
+    resources: ["appgroups"]
+    verbs: ["get", "list", "watch", "create", "delete", "update", "patch"]
+  - apiGroups: ["networktopology.diktyo.x-k8s.io"]
+    resources: ["networktopologies"]
+    verbs: ["get", "list", "watch", "create", "delete", "update", "patch"]
+  - apiGroups: ["scheduling.x-k8s.io"]
+    resources: ["podgroups", "elasticquotas", "podgroups/status", "elasticquotas/status"]
+    verbs: ["get", "list", "watch", "create", "delete", "update", "patch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: system:kube-scheduler:diktyo-scheduler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:kube-scheduler:diktyo-scheduler
+subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: system:kube-scheduler
 ---
 

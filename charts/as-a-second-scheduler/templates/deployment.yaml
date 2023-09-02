@@ -4,16 +4,16 @@ metadata:
   name: {{ .Values.controller.name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: scheduler-plugins-controller
+    app: {{ .Values.controller.name }}
 spec:
   replicas: {{ .Values.controller.replicaCount }}
   selector:
     matchLabels:
-      app: scheduler-plugins-controller
+      app: {{ .Values.controller.name }}
   template:
     metadata:
       labels:
-        app: scheduler-plugins-controller
+        app: {{ .Values.controller.name }}
     spec:
       serviceAccountName: {{ .Values.controller.name }}
       containers:
@@ -21,6 +21,7 @@ spec:
         image: {{ .Values.controller.image }}
         imagePullPolicy: IfNotPresent
 ---
+# Deploy Diktyo
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,13 +33,17 @@ spec:
   selector:
     matchLabels:
       component: scheduler
+      tier: control-plane
   replicas: {{ .Values.scheduler.replicaCount }}
   template:
     metadata:
       labels:
         component: scheduler
+        tier: control-plane
     spec:
       serviceAccountName: {{ .Values.scheduler.name }}
+      nodeSelector: # Modify accordingly
+        node-role.kubernetes.io/control-plane: ""
       containers:
       - command:
         - /bin/kube-scheduler
@@ -70,6 +75,11 @@ spec:
             mountPath: /etc/kubernetes
           - name: diktyo-config
             mountPath: /etc/diktyo
+      tolerations: # Modify the toleration if needed
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Equal"
+        value: ""
+        effect: "NoSchedule"
       hostNetwork: false
       hostPID: false
       volumes:
@@ -90,7 +100,7 @@ metadata:
   labels:
     app: {{ .Values.appGroupController.name }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.appGroupController.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Values.appGroupController.name }}
@@ -116,7 +126,7 @@ metadata:
   labels:
     app: {{ .Values.networkTopologyController.name }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.networkTopologyController.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Values.networkTopologyController.name }}
