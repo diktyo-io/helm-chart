@@ -35,15 +35,15 @@ data:
       pluginConfig:
         - name: TopologicalSort
           args:
-            namespaces:
-              #{{- range $.Values.plugins.namespaces }}
-              - "default" #{{ title . }}
-              #{{- end }}
+            namespaces: #- "default"
+              {{- range $.Values.plugins.namespaces }}
+              - {{ . }}
+              {{- end }}
         - name: NetworkOverhead
           args:
-            namespaces:
-              #{{- range $.Values.plugins.namespaces }}
-              - "default" #{{ title . }}
-              #{{- end }}
+            namespaces: #- "default"
+              {{- range $.Values.plugins.namespaces }}
+              - {{ . }}
+              {{- end }}
             weightsName: {{ .Values.plugins.weightsName }}
             networkTopologyName: {{ .Values.plugins.networkTopologyName }}
