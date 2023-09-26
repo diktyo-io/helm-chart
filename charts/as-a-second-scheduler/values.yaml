@@ -29,4 +29,9 @@ plugins:
   weightsName: "NetperfCosts" # Define here the costs you intend to use
   networkTopologyName: "nt-cluster" # Define here the name of the NetworkTopology CR
 
+diktyoConfig:
+  configmapName: "diktyo-config"
+  kubeConfigConfigmapName: "k8s-kubeconfig"
+  configmapPath: "/etc/diktyo-config/diktyo-config.yaml"
+  kubeconfigPath: "/etc/k8s-kubeconfig/k8s-kubeconfig.yaml"
 

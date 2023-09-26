@@ -42,14 +42,14 @@ spec:
         tier: control-plane
     spec:
       serviceAccountName: {{ .Values.scheduler.name }}
-      nodeSelector: # Modify accordingly
-        node-role.kubernetes.io/control-plane: ""
+      # nodeSelector: # Modify accordingly
+      #  node-role.kubernetes.io/control-plane: ""
       containers:
       - command:
         - /bin/kube-scheduler
-        - --authentication-kubeconfig=/etc/kubernetes/scheduler.conf
-        - --authorization-kubeconfig=/etc/kubernetes/scheduler.conf
-        - --config=/etc/diktyo/diktyo-config.yaml
+        - --authentication-kubeconfig={{ .Values.diktyoConfig.kubeconfigPath }}
+        - --authorization-kubeconfig={{ .Values.diktyoConfig.kubeconfigPath }}
+        - --config={{ .Values.diktyoConfig.configmapPath }}
         - -v=9
         name: {{ .Values.scheduler.name }}
         image: {{ .Values.scheduler.image }}
@@ -74,7 +74,9 @@ spec:
           - name: etckubernetes
             mountPath: /etc/kubernetes
           - name: diktyo-config
-            mountPath: /etc/diktyo
+            mountPath: /etc/{{ .Values.diktyoConfig.configmapName }}/
+          - name: k8s-kubeconfig
+            mountPath: /etc/{{ .Values.diktyoConfig.kubeConfigConfigmapName }}/
       tolerations: # Modify the toleration if needed
       - key: "node-role.kubernetes.io/control-plane"
         operator: "Equal"
@@ -87,9 +89,12 @@ spec:
           hostPath:
             path: /etc/kubernetes/
             type: Directory
-        - name: diktyo-config
+        - name: {{ .Values.diktyoConfig.configmapName }}
           configMap:
-            name: diktyo-config
+            name: {{ .Values.diktyoConfig.configmapName }}
+        - name: {{ .Values.diktyoConfig.kubeConfigConfigmapName }}
+          configMap:
+            name: {{ .Values.diktyoConfig.kubeConfigConfigmapName }}
 ---
 # Deploy appGroup controller
 kind: Deployment

@@ -2,16 +2,16 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: diktyo-config
+  name: {{ .Values.diktyoConfig.configmapName }}
   namespace: {{ .Release.Namespace }}
 data:
-  diktyo-config.yaml: |
+  {{ .Values.diktyoConfig.configmapName }}.yaml: |
     apiVersion: kubescheduler.config.k8s.io/v1
     kind: KubeSchedulerConfiguration
     leaderElection:
       leaderElect: {{ .Values.scheduler.leaderElect }}
     clientConnection:
-      kubeconfig: "/etc/kubernetes/scheduler.conf"
+      kubeconfig: {{ .Values.diktyoConfig.kubeconfigPath }}
     profiles:
     - schedulerName: {{ .Values.scheduler.name }}
       plugins:
@@ -47,3 +47,12 @@ data:
               {{- end }}
             weightsName: {{ .Values.plugins.weightsName }}
             networkTopologyName: {{ .Values.plugins.networkTopologyName }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.diktyoConfig.kubeConfigConfigmapName }}
+  namespace: {{ .Release.Namespace }}
+data:
+  {{ .Values.diktyoConfig.kubeConfigConfigmapName }}.yaml: |
+    # TODO: Add here your Kubeconfig file!
