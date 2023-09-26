@@ -47,9 +47,9 @@ spec:
       containers:
       - command:
         - /bin/kube-scheduler
-        - --authentication-kubeconfig={{ .Values.diktyoConfig.kubeconfigPath }}
-        - --authorization-kubeconfig={{ .Values.diktyoConfig.kubeconfigPath }}
-        - --config={{ .Values.diktyoConfig.configmapPath }}
+        - --authentication-kubeconfig=/etc/{{ .Values.diktyoConfig.kubeConfigConfigmapName }}/{{ .Values.diktyoConfig.kubeConfigConfigmapName }}.yaml
+        - --authorization-kubeconfig=/etc/{{ .Values.diktyoConfig.kubeConfigConfigmapName }}/{{ .Values.diktyoConfig.kubeConfigConfigmapName }}.yaml
+        - --config=/etc/{{ .Values.diktyoConfig.configmapName }}/{{ .Values.diktyoConfig.configmapName }}.yaml
         - -v=9
         name: {{ .Values.scheduler.name }}
         image: {{ .Values.scheduler.image }}

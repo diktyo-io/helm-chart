@@ -11,7 +11,7 @@ data:
     leaderElection:
       leaderElect: {{ .Values.scheduler.leaderElect }}
     clientConnection:
-      kubeconfig: {{ .Values.diktyoConfig.kubeconfigPath }}
+      kubeconfig: /etc/{{ .Values.diktyoConfig.kubeConfigConfigmapName }}/{{ .Values.diktyoConfig.kubeConfigConfigmapName }}.yaml
     profiles:
     - schedulerName: {{ .Values.scheduler.name }}
       plugins:

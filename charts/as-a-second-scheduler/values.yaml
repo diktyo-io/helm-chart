@@ -32,6 +32,4 @@ plugins:
 diktyoConfig:
   configmapName: "diktyo-config"
   kubeConfigConfigmapName: "k8s-kubeconfig"
-  configmapPath: "/etc/diktyo-config/diktyo-config.yaml"
-  kubeconfigPath: "/etc/k8s-kubeconfig/k8s-kubeconfig.yaml"
 
