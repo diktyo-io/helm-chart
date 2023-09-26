@@ -73,8 +73,10 @@ spec:
         volumeMounts:
           - name: etckubernetes
             mountPath: /etc/kubernetes
+            readOnly: true
           - name: diktyo-config
             mountPath: /etc/diktyo
+            readOnly: true
       tolerations: # Modify the toleration if needed
       - key: "node-role.kubernetes.io/control-plane"
         operator: "Equal"
