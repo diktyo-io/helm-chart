@@ -29,4 +29,11 @@ plugins:
   weightsName: "NetperfCosts" # Define here the costs you intend to use
   networkTopologyName: "nt-cluster" # Define here the name of the NetworkTopology CR
 
+schedulerConfig:
+  name: scheduler-config
+  filePath: /etc/kubernetes/scheduler.conf
+
+diktyoConfig:
+  name: diktyo-config
+  mountPath: /etc/diktyo
 

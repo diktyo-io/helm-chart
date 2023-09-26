@@ -47,9 +47,9 @@ spec:
       containers:
       - command:
         - /bin/kube-scheduler
-        - --authentication-kubeconfig=/etc/kubernetes/scheduler.conf
-        - --authorization-kubeconfig=/etc/kubernetes/scheduler.conf
-        - --config=/etc/diktyo/diktyo-config.yaml
+        - --authentication-kubeconfig={{ .Values.schedulerConfig.filePath }}
+        - --authorization-kubeconfig={{ .Values.schedulerConfig.filePath }}
+        - --config={{ .Values.diktyoConfig.mountPath }}/{{ .Values.diktyoConfig.name }}.yaml
         - -v=9
         name: {{ .Values.scheduler.name }}
         image: {{ .Values.scheduler.image }}
@@ -71,11 +71,11 @@ spec:
         securityContext:
           privileged: false
         volumeMounts:
-          - name: etckubernetes
-            mountPath: /etc/kubernetes
+          - name: {{ .Values.schedulerConfig.name }}
+            mountPath: {{ .Values.schedulerConfig.filePath }}
             readOnly: true
-          - name: diktyo-config
-            mountPath: /etc/diktyo
+          - name: {{ .Values.diktyoConfig.name }}
+            mountPath: {{ .Values.diktyoConfig.mountPath }}
             readOnly: true
       tolerations: # Modify the toleration if needed
       - key: "node-role.kubernetes.io/control-plane"
@@ -85,13 +85,13 @@ spec:
       hostNetwork: false
       hostPID: false
       volumes:
-        - name: etckubernetes
+        - name: {{ .Values.schedulerConfig.name }}
           hostPath:
-            path: /etc/kubernetes/
-            type: Directory
-        - name: diktyo-config
+            path: {{ .Values.schedulerConfig.filePath }}
+            type: File
+        - name: {{ .Values.diktyoConfig.name }}
           configMap:
-            name: diktyo-config
+            name: {{ .Values.diktyoConfig.name }}
 ---
 # Deploy appGroup controller
 kind: Deployment
