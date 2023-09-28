@@ -47,9 +47,9 @@ spec:
       containers:
       - command:
         - /bin/kube-scheduler
-        - --authentication-kubeconfig=/etc/{{ .Values.diktyoConfig.kubeConfigConfigmapName }}/{{ .Values.diktyoConfig.kubeConfigConfigmapName }}.yaml
-        - --authorization-kubeconfig=/etc/{{ .Values.diktyoConfig.kubeConfigConfigmapName }}/{{ .Values.diktyoConfig.kubeConfigConfigmapName }}.yaml
-        - --config=/etc/{{ .Values.diktyoConfig.configmapName }}/{{ .Values.diktyoConfig.configmapName }}.yaml
+        - --authentication-kubeconfig={{ .Values.KubeConfig.mountPath }}/{{ .Values.KubeConfig.name }}.yaml
+        - --authorization-kubeconfig={{ .Values.KubeConfig.mountPath }}/{{ .Values.KubeConfig.name }}.yaml
+        - --config={{ .Values.diktyoConfig.mountPath }}/{{ .Values.diktyoConfig.name }}.yaml
         - -v=9
         name: {{ .Values.scheduler.name }}
         image: {{ .Values.scheduler.image }}
@@ -71,12 +71,12 @@ spec:
         securityContext:
           privileged: false
         volumeMounts:
-          - name: etckubernetes
-            mountPath: /etc/kubernetes
-          - name: diktyo-config
-            mountPath: /etc/{{ .Values.diktyoConfig.configmapName }}/
-          - name: k8s-kubeconfig
-            mountPath: /etc/{{ .Values.diktyoConfig.kubeConfigConfigmapName }}/
+          - name: {{ .Values.diktyoConfig.name }}
+            mountPath: {{ .Values.diktyoConfig.mountPath }}
+            readOnly: true
+          - name: {{ .Values.KubeConfig.name }}
+            mountPath: {{ .Values.KubeConfig.mountPath }}
+            readOnly: true
       tolerations: # Modify the toleration if needed
       - key: "node-role.kubernetes.io/control-plane"
         operator: "Equal"
@@ -85,16 +85,12 @@ spec:
       hostNetwork: false
       hostPID: false
       volumes:
-        - name: etckubernetes
-          hostPath:
-            path: /etc/kubernetes/
-            type: Directory
-        - name: {{ .Values.diktyoConfig.configmapName }}
+        - name: {{ .Values.diktyoConfig.name }}
           configMap:
-            name: {{ .Values.diktyoConfig.configmapName }}
-        - name: {{ .Values.diktyoConfig.kubeConfigConfigmapName }}
+            name: {{ .Values.diktyoConfig.name }}
+        - name: {{ .Values.KubeConfig.name }}
           configMap:
-            name: {{ .Values.diktyoConfig.kubeConfigConfigmapName }}
+            name: {{ .Values.KubeConfig.name }}
 ---
 # Deploy appGroup controller
 kind: Deployment

@@ -30,6 +30,10 @@ plugins:
   networkTopologyName: "nt-cluster" # Define here the name of the NetworkTopology CR
 
 diktyoConfig:
-  configmapName: "diktyo-config"
-  kubeConfigConfigmapName: "k8s-kubeconfig"
+  name: diktyo-config
+  mountPath: /etc/diktyo
+
+KubeConfig:
+  name: "diktyo-scheduler-kubeconfig"
+  mountPath: /etc/diktyo-scheduler-kubeconfig
 
