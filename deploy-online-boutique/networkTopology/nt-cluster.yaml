@@ -1,0 +1,41 @@
+# Example Network CRD
+apiVersion: scheduling.sigs.k8s.io/v1alpha1
+kind: NetworkTopology
+metadata:
+  name: nt-cluster
+  namespace: diktyo-io
+spec:
+  configmapName: "netperf-metrics"
+  weights:
+    - name: "UserDefined"
+      topologyList: # Define weights between regions or between zones
+        - topologyKey: "topology.kubernetes.io/region" # region costs
+          originList:
+            - origin: "berlin"
+              costList:
+        - topologyKey: "topology.kubernetes.io/zone" # zone costs
+          originList:
+            - origin: "z1"
+              costList:
+                - destination: "z2"
+                  bandwidthCapacity: "1Gi"
+                  networkCost: 5
+                - destination: "z3"
+                  bandwidthCapacity: "1Gi"
+                  networkCost: 10
+            - origin: "z2"
+              costList:
+                - destination: "z1"
+                  bandwidthCapacity: "1Gi"
+                  networkCost: 5
+                - destination: "z3"
+                  bandwidthCapacity: "1Gi"
+                  networkCost: 10
+            - origin: "z3"
+              costList:
+                - destination: "z1"
+                  bandwidthCapacity: "1Gi"
+                  networkCost: 10
+                - destination: "z2"
+                  bandwidthCapacity: "1Gi"
+                  networkCost: 10

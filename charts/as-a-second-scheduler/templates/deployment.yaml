@@ -1,3 +1,4 @@
+# Deploy scheduler-plugins controller
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -21,7 +22,7 @@ spec:
         image: {{ .Values.controller.image }}
         imagePullPolicy: IfNotPresent
 ---
-# Deploy Diktyo
+# Deploy Diktyo scheduler
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -92,54 +93,3 @@ spec:
           configMap:
             name: {{ .Values.KubeConfig.name }}
 ---
-# Deploy appGroup controller
-kind: Deployment
-apiVersion: apps/v1
-metadata:
-  name: {{ .Values.appGroupController.name }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app: {{ .Values.appGroupController.name }}
-spec:
-  replicas: {{ .Values.appGroupController.replicaCount }}
-  selector:
-    matchLabels:
-      app: {{ .Values.appGroupController.name }}
-  template:
-    metadata:
-      labels:
-        app: {{ .Values.appGroupController.name }}
-    spec:
-      serviceAccountName: {{ .Values.appGroupController.name }}
-      containers:
-        - name: {{ .Values.appGroupController.name }}
-          image: {{ .Values.appGroupController.image }}
-          command:
-            - /bin/controller
-          imagePullPolicy: Always #IfNotPresent
----
-# Deploy NetworkTopology controller
-kind: Deployment
-apiVersion: apps/v1
-metadata:
-  name: {{ .Values.networkTopologyController.name }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app: {{ .Values.networkTopologyController.name }}
-spec:
-  replicas: {{ .Values.networkTopologyController.replicaCount }}
-  selector:
-    matchLabels:
-      app: {{ .Values.networkTopologyController.name }}
-  template:
-    metadata:
-      labels:
-        app: {{ .Values.networkTopologyController.name }}
-    spec:
-      serviceAccountName: {{ .Values.networkTopologyController.name }}
-      containers:
-        - name: {{ .Values.networkTopologyController.name }}
-          image: {{ .Values.networkTopologyController.image }}
-          command:
-            - /bin/controller
-          imagePullPolicy: Always #IfNotPresent

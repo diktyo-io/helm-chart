@@ -4,29 +4,19 @@
 
 scheduler:
   name: diktyo-scheduler
-  image: registry.k8s.io/scheduler-plugins/kube-scheduler:v0.26.7
+  image: jpedro1992/kube-scheduler:v1.1
   replicaCount: 1
   leaderElect: false
   weight: 5 # Attribute a weight to the scoring plugin.
 
 controller:
   name: scheduler-plugins-controller
-  image: registry.k8s.io/scheduler-plugins/controller:v0.26.7
-  replicaCount: 1
-
-appGroupController:
-  name: appgroup-controller
-  image: jpedro1992/appgroup-controller:v1.0.3-alpha
-  replicaCount: 1
-
-networkTopologyController:
-  name: networktopology-controller
-  image: jpedro1992/networktopology-controller:v1.0.3-alpha
+  image: jpedro1992/controller:kubecon
   replicaCount: 1
 
 plugins:
   namespaces: ["default"]
-  weightsName: "NetperfCosts" # Define here the costs you intend to use
+  weightsName: "UserDefined" # Define here the costs you intend to use
   networkTopologyName: "nt-cluster" # Define here the name of the NetworkTopology CR
 
 diktyoConfig:

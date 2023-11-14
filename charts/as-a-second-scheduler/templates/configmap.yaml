@@ -6,47 +6,44 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   {{ .Values.diktyoConfig.name }}.yaml: |
-    apiVersion: kubescheduler.config.k8s.io/v1
+    apiVersion: kubescheduler.config.k8s.io/v1beta1
     kind: KubeSchedulerConfiguration
     leaderElection:
       leaderElect: {{ .Values.scheduler.leaderElect }}
     clientConnection:
       kubeconfig: {{ .Values.KubeConfig.mountPath }}/{{ .Values.KubeConfig.name }}.yaml
     profiles:
-    - schedulerName: {{ .Values.scheduler.name }}
-      plugins:
-        queueSort:
-          enabled:
+      - schedulerName: {{ .Values.scheduler.name }}
+        plugins:
+          queueSort:
+            enabled:
+              - name: TopologicalSort
+            disabled:
+              - name: "*"
+          filter:
+            enabled:
+              - name: NetworkOverhead
+          score:
+            enabled: # A higher weight is given to NetworkMinCost to favor allocation schemes with lower latency.
+              - name: NetworkOverhead
+                weight: {{ .Values.scheduler.weight }}
+        pluginConfig:
           - name: TopologicalSort
-          disabled:
-          - name: "*"
-        preFilter:
-          enabled:
+            args:
+              kubeConfigPath: {{ .Values.KubeConfig.mountPath }}/{{ .Values.KubeConfig.name }}.yaml
+              namespaces:
+                {{- range $.Values.plugins.namespaces }}
+                - {{ . }}
+                {{- end }}
           - name: NetworkOverhead
-        filter:
-          enabled:
-          - name: NetworkOverhead
-        score:
-          disabled: # Preferably avoid the combination of NodeResourcesFit with NetworkOverhead
-          - name: NodeResourcesFit
-          enabled: # A higher weight is given to NetworkOverhead to favor allocation schemes with lower latency.
-          - name: NetworkOverhead
-            weight: {{ .Values.scheduler.weight }}
-      pluginConfig:
-        - name: TopologicalSort
-          args:
-            namespaces: #- "default"
-              {{- range $.Values.plugins.namespaces }}
-              - {{ . }}
-              {{- end }}
-        - name: NetworkOverhead
-          args:
-            namespaces: #- "default"
-              {{- range $.Values.plugins.namespaces }}
-              - {{ . }}
-              {{- end }}
-            weightsName: {{ .Values.plugins.weightsName }}
-            networkTopologyName: {{ .Values.plugins.networkTopologyName }}
+            args:
+              kubeConfigPath: {{ .Values.KubeConfig.mountPath }}/{{ .Values.KubeConfig.name }}.yaml
+              namespaces:
+                {{- range $.Values.plugins.namespaces }}
+                - {{ . }}
+                {{- end }}
+              weightsName: {{ .Values.plugins.weightsName }}
+              networkTopologyName: {{ .Values.plugins.networkTopologyName }}
 ---
 apiVersion: v1
 kind: ConfigMap
