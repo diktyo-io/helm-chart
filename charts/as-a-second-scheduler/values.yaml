@@ -16,12 +16,12 @@ controller:
 
 appGroupController:
   name: appgroup-controller
-  image: jpedro1992/appgroup-controller:v1.0.3-alpha
+  image: jpedro1992/appgroup-controller:security
   replicaCount: 1
 
 networkTopologyController:
   name: networktopology-controller
-  image: jpedro1992/networktopology-controller:v1.0.3-alpha
+  image: jpedro1992/networktopology-controller:security
   replicaCount: 1
 
 plugins:
