@@ -3,7 +3,7 @@ apiVersion: scheduling.sigs.k8s.io/v1alpha1
 kind: NetworkTopology
 metadata:
   name: nt-cluster
-  namespace: diktyo-io
+  #namespace: diktyo
 spec:
   configmapName: "netperf-metrics"
   weights:
@@ -28,9 +28,6 @@ spec:
                 - destination: "z1"
                   bandwidthCapacity: "1Gi"
                   networkCost: 5
-                - destination: "z3"
-                  bandwidthCapacity: "1Gi"
-                  networkCost: 10
             - origin: "z3"
               costList:
                 - destination: "z1"
