@@ -107,28 +107,102 @@ spec:
                                         - networkCost
                                       type: object
                                     type: array
-                                  minCost:
-                                    description: minimum cost for a particular origin
-                                    type: integer
-                                    default: 0
-                                    minimum: 0
-                                    format: int64
-                                  avgCost:
-                                    description: average cost for a particular origin
-                                    type: integer
-                                    default: 0
-                                    minimum: 0
-                                    format: int64
-                                  maxCost:
-                                    description: maximum cost for a particular origin
-                                    type: integer
-                                    default: 0
-                                    minimum: 0
-                                    format: int64
                                   origin:
                                     description: Name of the origin (e.g., Region Name,
                                       Zone Name).
                                     type: string
+                                  originInterStatistics:
+                                    description: originInterStatistics represents the bandwidth and cost statistics of the origin.
+                                    properties:
+                                      minBandwidth:
+                                        anyOf:
+                                          - type: integer
+                                          - type: string
+                                        description: avg bandwidth requirement
+                                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                        x-kubernetes-int-or-string: true
+                                      avgBandwidth:
+                                        anyOf:
+                                          - type: integer
+                                          - type: string
+                                        description: avg bandwidth requirement
+                                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                        x-kubernetes-int-or-string: true
+                                      maxBandwidth:
+                                        anyOf:
+                                          - type: integer
+                                          - type: string
+                                        description: max bandwidth requirement
+                                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                        x-kubernetes-int-or-string: true
+                                      minCost:
+                                        description: Avg Network Cost requirement
+                                        type: integer
+                                        default: 0
+                                        minimum: 0
+                                        maximum: 10000
+                                        format: int64
+                                      avgCost:
+                                        description: Avg Network Cost requirement
+                                        type: integer
+                                        default: 0
+                                        minimum: 0
+                                        maximum: 10000
+                                        format: int64
+                                      maxCost:
+                                        description: Max Network Cost requirement
+                                        type: integer
+                                        default: 0
+                                        minimum: 0
+                                        maximum: 10000
+                                        format: int64
+                                    type: object
+                                  originIntraStatistics:
+                                    description: originIntraStatistics represents the bandwidth and cost statistics of the origin.
+                                    properties:
+                                      minBandwidth:
+                                        anyOf:
+                                          - type: integer
+                                          - type: string
+                                        description: avg bandwidth requirement
+                                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                        x-kubernetes-int-or-string: true
+                                      avgBandwidth:
+                                        anyOf:
+                                          - type: integer
+                                          - type: string
+                                        description: avg bandwidth requirement
+                                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                        x-kubernetes-int-or-string: true
+                                      maxBandwidth:
+                                        anyOf:
+                                          - type: integer
+                                          - type: string
+                                        description: max bandwidth requirement
+                                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                        x-kubernetes-int-or-string: true
+                                      minCost:
+                                        description: Avg Network Cost requirement
+                                        type: integer
+                                        default: 0
+                                        minimum: 0
+                                        maximum: 10000
+                                        format: int64
+                                      avgCost:
+                                        description: Avg Network Cost requirement
+                                        type: integer
+                                        default: 0
+                                        minimum: 0
+                                        maximum: 10000
+                                        format: int64
+                                      maxCost:
+                                        description: Max Network Cost requirement
+                                        type: integer
+                                        default: 0
+                                        minimum: 0
+                                        maximum: 10000
+                                        format: int64
+                                    type: object
                                 required:
                                   - origin
                                 type: object
