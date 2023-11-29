@@ -1,0 +1,34 @@
+# Example Network CRD
+apiVersion: networktopology.diktyo.x-k8s.io/v1alpha1
+kind: NetworkTopology
+metadata:
+  name: nt-cluster
+  namespace: default
+spec:
+  configmapName: "netperf-metrics"
+  weights:
+    - name: "UserDefined"
+      topologyList: # Define weights between regions or between zones
+        - topologyKey: "topology.kubernetes.io/region" # region costs
+          originList:
+            - origin: "idlab"
+              costList:
+        - topologyKey: "topology.kubernetes.io/zone" # zone costs
+          originList:
+            - origin: "z1" # n1
+              costList:
+            - origin: "z2" # n2
+              costList:
+            - origin: "z3" # n3
+              costList:
+            - origin: "z4" # n4
+              costList:
+        - topologyKey: "topology.kubernetes.io/segment" # segment costs
+          originList:
+            - origin: "s1" # s1
+              costList:
+            - origin: "s2" # s2
+              costList:
+
+
+

@@ -4,7 +4,7 @@
 
 scheduler:
   name: diktyo-scheduler
-  image: registry.k8s.io/scheduler-plugins/kube-scheduler:v0.26.7
+  image: jpedro1992/kube-scheduler:security
   replicaCount: 1
   leaderElect: false
   weight: 5 # Attribute a weight to the scoring plugin.

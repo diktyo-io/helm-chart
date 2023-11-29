@@ -53,7 +53,7 @@ spec:
         - -v=9
         name: {{ .Values.scheduler.name }}
         image: {{ .Values.scheduler.image }}
-        imagePullPolicy: IfNotPresent        
+        imagePullPolicy: Always
         livenessProbe:
           httpGet:
             path: /healthz
